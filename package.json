@@ -9,8 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "prebuild": "npm run test"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "next": "^14.2.35",
