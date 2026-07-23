@@ -24,22 +24,27 @@ fi
 
 echo "📦 Preparing gh-pages deployment..."
 
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+BUILD_HASH=$(git rev-parse --short HEAD)
+BUILD_DIR=$(pwd)/out
+
 # Check if gh-pages branch exists; if not, create it
 if ! git show-ref --verify --quiet refs/heads/gh-pages; then
   echo "Creating new gh-pages branch..."
   git checkout --orphan gh-pages
-  git rm -rf .
+  git rm -rf . 2>/dev/null || true
   git commit --allow-empty -m "Initial gh-pages commit"
-  git checkout -
+  git checkout "$CURRENT_BRANCH"
 fi
 
-# Copy build output to gh-pages
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# Now update gh-pages with new build
 git checkout gh-pages
 
-# Clear and copy
+# Clear old files
 git rm -rf . 2>/dev/null || true
-cp -r ../out/* ./
+
+# Copy build output (use absolute path)
+cp -r "$BUILD_DIR"/* .
 
 # Write CNAME if provided
 if [ -n "$CNAME_DOMAIN" ]; then
@@ -49,7 +54,7 @@ fi
 
 # Commit
 git add .
-git commit -m "Deploy: $(git -C .. rev-parse --short HEAD)" || echo "No changes to commit"
+git commit -m "Deploy: $BUILD_HASH" || echo "No changes to commit"
 
 echo "✅ Deployment ready on gh-pages branch"
 echo "   Commit hash: $(git rev-parse --short HEAD)"
