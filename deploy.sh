@@ -24,26 +24,36 @@ fi
 
 echo "📦 Preparing gh-pages deployment..."
 
-# Create a temporary worktree for gh-pages
-TEMP_BRANCH=$(mktemp -d)
-trap "rm -rf $TEMP_BRANCH" EXIT
+# Check if gh-pages branch exists; if not, create it
+if ! git show-ref --verify --quiet refs/heads/gh-pages; then
+  echo "Creating new gh-pages branch..."
+  git checkout --orphan gh-pages
+  git rm -rf .
+  git commit --allow-empty -m "Initial gh-pages commit"
+  git checkout -
+fi
 
-git worktree add "$TEMP_BRANCH" gh-pages 2>/dev/null || git worktree add "$TEMP_BRANCH" --orphan gh-pages
+# Copy build output to gh-pages
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+git checkout gh-pages
 
-# Copy build output
-rm -rf "$TEMP_BRANCH"/*
-cp -r out/* "$TEMP_BRANCH/"
+# Clear and copy
+git rm -rf . 2>/dev/null || true
+cp -r ../out/* ./
 
 # Write CNAME if provided
 if [ -n "$CNAME_DOMAIN" ]; then
-  echo "$CNAME_DOMAIN" > "$TEMP_BRANCH/CNAME"
+  echo "$CNAME_DOMAIN" > CNAME
   echo "📝 Written CNAME: $CNAME_DOMAIN"
 fi
 
-# Commit and push
-cd "$TEMP_BRANCH"
+# Commit
 git add .
-git commit -m "Deploy: $(git rev-parse --short HEAD)" || echo "No changes to commit"
+git commit -m "Deploy: $(git -C .. rev-parse --short HEAD)" || echo "No changes to commit"
 
 echo "✅ Deployment ready on gh-pages branch"
+echo "   Commit hash: $(git rev-parse --short HEAD)"
 echo "   Push with: git push origin gh-pages"
+
+# Return to original branch
+git checkout "$CURRENT_BRANCH"
