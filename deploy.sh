@@ -2,9 +2,7 @@
 set -e
 
 # Deploy script for midmarket-ledger to GitHub Pages
-# Usage: ./deploy.sh [basePath] [cname]
-#   ./deploy.sh                                  # Deploy to /midmarket-ledger (default)
-#   ./deploy.sh "" midmarket.hepburnadvisory.com.au  # Deploy to root with CNAME
+# Creates an orphan gh-pages branch with only static files
 
 BASE_PATH="${1:--midmarket-ledger}"
 CNAME_DOMAIN="${2:-}"
@@ -26,39 +24,37 @@ echo "📦 Preparing gh-pages deployment..."
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BUILD_HASH=$(git rev-parse --short HEAD)
-BUILD_DIR=$(pwd)/out
+TEMP_DIR=$(mktemp -d)
+trap "rm -rf $TEMP_DIR" EXIT
 
-# Check if gh-pages branch exists; if not, create it
-if ! git show-ref --verify --quiet refs/heads/gh-pages; then
-  echo "Creating new gh-pages branch..."
-  git checkout --orphan gh-pages
-  git rm -rf . 2>/dev/null || true
-  git commit --allow-empty -m "Initial gh-pages commit"
-  git checkout "$CURRENT_BRANCH"
-fi
+# Copy only the static files to temp directory
+cp -r out/* "$TEMP_DIR/"
 
-# Now update gh-pages with new build
-git checkout gh-pages
-
-# Clear old files
-git rm -rf . 2>/dev/null || true
-
-# Copy build output (use absolute path)
-cp -r "$BUILD_DIR"/* .
-
-# Write CNAME if provided
+# Add CNAME if provided
 if [ -n "$CNAME_DOMAIN" ]; then
-  echo "$CNAME_DOMAIN" > CNAME
+  echo "$CNAME_DOMAIN" > "$TEMP_DIR/CNAME"
   echo "📝 Written CNAME: $CNAME_DOMAIN"
 fi
 
-# Commit
+# Add .nojekyll to prevent GitHub from processing files
+touch "$TEMP_DIR/.nojekyll"
+
+# Create orphan gh-pages branch (completely separate history)
+git checkout --orphan gh-pages
+
+# Clear working directory and stage area
+git rm -rf . 2>/dev/null || true
+
+# Copy static files
+cp -r "$TEMP_DIR"/* .
+
+# Commit the deployment
 git add .
-git commit -m "Deploy: $BUILD_HASH" || echo "No changes to commit"
+git commit -m "Deploy: $BUILD_HASH"
 
 echo "✅ Deployment ready on gh-pages branch"
 echo "   Commit hash: $(git rev-parse --short HEAD)"
-echo "   Push with: git push origin gh-pages"
+echo "   Push with: git push -f origin gh-pages"
 
 # Return to original branch
 git checkout "$CURRENT_BRANCH"
