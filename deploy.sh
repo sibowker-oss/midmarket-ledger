@@ -24,32 +24,43 @@ echo "📦 Preparing gh-pages deployment..."
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BUILD_HASH=$(git rev-parse --short HEAD)
-TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
-
-# Copy only the static files to temp directory
-cp -r out/* "$TEMP_DIR/"
-
-# Add CNAME if provided
-if [ -n "$CNAME_DOMAIN" ]; then
-  echo "$CNAME_DOMAIN" > "$TEMP_DIR/CNAME"
-  echo "📝 Written CNAME: $CNAME_DOMAIN"
-fi
-
-# Add .nojekyll to prevent GitHub from processing files
-touch "$TEMP_DIR/.nojekyll"
 
 # Create orphan gh-pages branch (completely separate history)
 git checkout --orphan gh-pages
 
-# Clear working directory and stage area
+# Clear working directory and stage area completely
 git rm -rf . 2>/dev/null || true
 
-# Copy static files
-cp -r "$TEMP_DIR"/* .
+# Create .gitignore to prevent node_modules from ever being added
+cat > .gitignore << 'GITIGNORE'
+node_modules/
+.next/
+dist/
+out/
+.env
+.env.local
+GITIGNORE
+
+# Copy only static files
+cp -r out/* .
+
+# Add .nojekyll to prevent GitHub from processing files
+touch .nojekyll
+
+# Add CNAME if provided
+if [ -n "$CNAME_DOMAIN" ]; then
+  echo "$CNAME_DOMAIN" > CNAME
+  echo "📝 Written CNAME: $CNAME_DOMAIN"
+fi
+
+# Add only the static files (and .gitignore, .nojekyll, CNAME if present)
+git add .gitignore .nojekyll
+git add _next/ 404.html *.html *.txt 2>/dev/null || true
+if [ -f CNAME ]; then
+  git add CNAME
+fi
 
 # Commit the deployment
-git add .
 git commit -m "Deploy: $BUILD_HASH"
 
 echo "✅ Deployment ready on gh-pages branch"
