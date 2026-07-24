@@ -16,9 +16,6 @@ export default function Register() {
       {/* Header */}
       <div className="bg-surface border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="fictional-banner">
-            {FICTIONAL_DISCLAIMER}
-          </div>
           <h1 className="text-3xl font-bold mb-2">Tool Census & Register</h1>
           <p className="text-ink-muted mb-3">
             {COMPANY_NAME} — As at {ENGAGEMENT_DATE}

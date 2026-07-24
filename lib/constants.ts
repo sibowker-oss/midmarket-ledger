@@ -9,14 +9,16 @@ export const OFFER_SUBLINE = "What is your AI actually returning? A two-week ind
 export const COMPANY_NAME = "Acme Corporation";
 export const COMPANY_SHORT = "Acme";
 
-export const FICTIONAL_DISCLAIMER =
-  "Acme Corporation is a fictional company. All figures are illustrative.";
+export const FICTIONAL_DISCLAIMER = "";
 
 export const DATA_BOUNDARY_LINE =
   "Finance extracts, metadata and aggregate usage only — never prompts, customer data or anything a person could be identified from.";
 
 export const SCENARIO_CAVEAT =
   "Illustrative scenario, not a forecast — in a live Snapshot this renders from The AI Ledger with source and as-of date.";
+
+export const PRICE_EXPOSURE_INFO =
+  "Price exposure from The AI Ledger: usage-priced tools where cost scales with adoption. Requires meter tracking, caps, and named alerting.";
 
 export const OFFER_FEE = "Fixed: ~A$12,000 ex-GST (two weeks)";
 

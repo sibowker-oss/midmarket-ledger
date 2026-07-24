@@ -14,9 +14,6 @@ export default function Memo() {
       {/* Header */}
       <div className="bg-surface border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="fictional-banner">
-            {FICTIONAL_DISCLAIMER}
-          </div>
           <h1 className="text-3xl font-bold mb-2">Decision Memo</h1>
           <p className="text-ink-muted">
             {COMPANY_NAME} — As at {ENGAGEMENT_DATE}
@@ -56,7 +53,7 @@ export default function Memo() {
               <div className="grid grid-cols-3 gap-4 text-xs mt-4 pt-4 border-t border-border">
                 {uc.promisedAnnualAud !== undefined && (
                   <div>
-                    <div className="text-ink-faint">Promised</div>
+                    <div className="text-ink-faint">Targetted Value</div>
                     <div className="font-semibold text-ink">
                       {formatCurrency(uc.promisedAnnualAud, true)}
                     </div>
@@ -64,7 +61,7 @@ export default function Memo() {
                 )}
                 {uc.measuredAnnualAud !== undefined && (
                   <div>
-                    <div className="text-ink-faint">Measured</div>
+                    <div className="text-ink-faint">Measured Value</div>
                     <div className="font-semibold text-ink">
                       {formatCurrency(uc.measuredAnnualAud, true)}
                     </div>
@@ -72,7 +69,7 @@ export default function Memo() {
                 )}
                 {uc.bankedAnnualAud !== undefined && (
                   <div>
-                    <div className="text-ink-faint">Banked</div>
+                    <div className="text-ink-faint">Banked Value</div>
                     <div className="font-semibold text-accent">
                       {formatCurrency(uc.bankedAnnualAud, true)}
                     </div>

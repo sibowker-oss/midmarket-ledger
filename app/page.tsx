@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import seedData from "@/data/seed-data.json";
-import { OFFER_NAME, COMPANY_NAME, FICTIONAL_DISCLAIMER, DATA_BOUNDARY_LINE, ENGAGEMENT_DATE } from "@/lib/constants";
+import { OFFER_NAME, COMPANY_NAME, FICTIONAL_DISCLAIMER, DATA_BOUNDARY_LINE, ENGAGEMENT_DATE, PRICE_EXPOSURE_INFO } from "@/lib/constants";
 import type { SeedData } from "@/lib/types";
 import { formatCurrency, formatPercent } from "@/lib/calculations";
 
@@ -14,9 +14,6 @@ export default function Home() {
       {/* Header */}
       <div className="bg-surface border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="fictional-banner">
-            {FICTIONAL_DISCLAIMER}
-          </div>
           <h1 className="text-3xl font-bold mb-2">
             {COMPANY_NAME} — {OFFER_NAME}
           </h1>
@@ -53,7 +50,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Promise */}
             <div className="lane-card">
-              <div className="metric-label">Promised</div>
+              <div className="metric-label">Targetted Value</div>
               <div className="metric-value">
                 {formatCurrency(data.metrics.promisedAnnualAud, true)}
               </div>
@@ -62,9 +59,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Measurably moved */}
+            {/* Measured Value */}
             <div className="lane-card">
-              <div className="metric-label">Measurably moved</div>
+              <div className="metric-label">Measured Value</div>
               <div className="metric-value">
                 {formatCurrency(data.metrics.measuredAnnualAud, true)}
               </div>
@@ -96,14 +93,14 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Cash conversion */}
+          {/* ROI */}
           <div className="mt-6 p-4 bg-surface rounded border border-accent/30">
-            <div className="text-sm text-ink-muted font-semibold">Cash conversion rate</div>
+            <div className="text-sm text-ink-muted font-semibold">ROI</div>
             <div className="text-2xl font-bold text-accent mt-1">
               {formatPercent(data.metrics.cashConversionPercent)}
             </div>
             <div className="text-xs text-ink-faint mt-2">
-              {formatCurrency(data.metrics.bankedAnnualAud, true)} banked ÷ {formatCurrency(data.metrics.promisedAnnualAud, true)} promised
+              {formatCurrency(data.metrics.bankedAnnualAud, true)} banked ÷ {formatCurrency(data.metrics.promisedAnnualAud, true)} targetted value
             </div>
           </div>
         </section>
@@ -127,6 +124,7 @@ export default function Home() {
         {/* Meter exposure */}
         <section className="mb-12">
           <h2 className="text-xl font-semibold mb-6">Meter exposure: usage-priced tools</h2>
+          <p className="text-sm text-ink-muted mb-6 italic">{PRICE_EXPOSURE_INFO}</p>
           <div className="overflow-x-auto">
             <table>
               <thead>
